@@ -1,0 +1,97 @@
+
+[colab] A new version of Colab CLI is available: 0.7.4 (current: 0.7.1.dev1+gddf8e3fcf)
+[colab] Run 'colab update' to update.
+[colab] To silence this check, set "enable_update_check": false in ~/.config/colab-cli/settings.json
+
+##### installed interp_cpu rc=0
+TRITON 3.6.0 interp True
+COMBINE_SRC
+@jit
+def _argmax_combine(value1, index1, value2, index2, tie_break_left):
+    if tie_break_left:
+        tie = value1 == value2 and index1 < index2
+    else:
+        tie = False
+    gt = value1 > value2 or tie
+    v_ret = core.where(gt, value1, value2)
+    i_ret = core.where(gt, index1, index2)
+    return v_ret, i_ret
+
+AGG {'ok': 489, 'nan_idx': 1368, 'wrong_finite': 831, 'total': 2688}
+EXAMPLES [{"N": 8, "nw": 1, "TB": false, "nan_pos": 4, "got": 6, "x_got": -1.0, "true_idx": 1, "true_val": 2.0, "tl_max_val": 2.0}, {"N": 8, "nw": 1, "TB": false, "nan_pos": 5, "got": 6, "x_got": -1.0, "true_idx": 4, "true_val": 3.0, "tl_max_val": 3.0}, {"N": 8, "nw": 1, "TB": false, "nan_pos": 6, "got": 7, "x_got": -3.0, "true_idx": 4, "true_val": 3.0, "tl_max_val": 3.0}, {"N": 8, "nw": 1, "TB": 
+##### installed compiled_gpu rc=0
+TRITON 3.6.0 interp False
+COMBINE_SRC
+@jit
+def _argmax_combine(value1, index1, value2, index2, tie_break_left):
+    if tie_break_left:
+        tie = value1 == value2 and index1 < index2
+    else:
+        tie = False
+    gt = value1 > value2 or tie
+    v_ret = core.where(gt, value1, value2)
+    i_ret = core.where(gt, index1, index2)
+    return v_ret, i_ret
+
+AGG {'ok': 2552, 'nan_idx': 48, 'wrong_finite': 88, 'total': 2688}
+  N8_nw1_TBTrue {'ok': 27, 'nan_idx': 4, 'wrong_finite': 1, 'total': 32}
+  N8_nw1_TBFalse {'ok': 25, 'nan_idx': 4, 'wrong_finite': 3, 'total': 32}
+  N8_nw4_TBTrue {'ok': 23, 'nan_idx': 4, 'wrong_finite': 5, 'total': 32}
+  N8_nw4_TBFalse {'ok': 23, 'nan_idx': 4, 'wrong_finite': 5, 'total': 32}
+  N32_nw1_TBTrue {'ok': 115, 'nan_idx': 4, 'wrong_finite': 9, 'total': 128}
+  N32_nw1_TBFalse {'ok': 116, 'nan_idx': 4, 'wrong_finite': 8, 'total': 128}
+  N32_nw4_TBTrue {'ok': 121, 'nan_idx': 4, 'wrong_finite': 3, 'total': 128}
+  N32_nw4_TBFalse {'ok': 114, 'nan_idx': 4, 'wrong_finite': 10, 'total': 128}
+  N128_nw1_TBTrue {'ok': 495, 'nan_idx': 4, 'wrong_finite': 13, 'total': 512}
+  N128_nw1_TBFalse {'ok': 500, 'nan_idx': 4, 'wrong_finite': 8, 'total': 512}
+  N128_nw4_TBTrue {'ok': 498, 'nan_idx': 4, 'wrong_finite': 10, 'total': 512}
+  N128_nw4_TBFalse {'ok': 495, 'nan_idx': 4, 'wrong_finite': 13, 'total': 512}
+EXAMPLES [{"N": 8, "nw": 1, "TB": true, "nan_pos": 6, "got": 3, "x_got": 2.0, "true_idx": 4, "true_val": 3.0, "tl_max_val": 3.0}, {"N": 8, "nw": 1, "TB": false, "nan_pos": 6, "got": 1, "x_got": 2.0, "true_idx": 4, "true_val": 3.0, "tl_max_val": 3.0}, {"N": 8, "nw": 1, "TB": false, "nan_pos": 6, "got": 1, "x_got": 1.0, "true_idx": 4, "true_val": 2.0, "tl_max_val": 2.0}, {"N": 8, "nw": 1, "TB": fals
+NIGHTLY_INSTALL rc 0 ERROR: Could not find a version that satisfies the requirement triton-nightly (from versions: none)
+ERROR: No matching distribution found for triton-nightly
+
+AFTER_INSTALL 3.6.0 /usr/local/lib/python3.13/dist-packages/triton/__init__.py 
+##### after_nightly_attempt interp_cpu rc=0
+TRITON 3.6.0 interp True
+COMBINE_SRC
+@jit
+def _argmax_combine(value1, index1, value2, index2, tie_break_left):
+    if tie_break_left:
+        tie = value1 == value2 and index1 < index2
+    else:
+        tie = False
+    gt = value1 > value2 or tie
+    v_ret = core.where(gt, value1, value2)
+    i_ret = core.where(gt, index1, index2)
+    return v_ret, i_ret
+
+AGG {'ok': 489, 'nan_idx': 1368, 'wrong_finite': 831, 'total': 2688}
+EXAMPLES [{"N": 8, "nw": 1, "TB": false, "nan_pos": 4, "got": 6, "x_got": -1.0, "true_idx": 1, "true_val": 2.0, "tl_max_val": 2.0}, {"N": 8, "nw": 1, "TB": false, "nan_pos": 5, "got": 6, "x_got": -1.0, "true_idx": 4, "true_val": 3.0, "tl_max_val": 3.0}, {"N": 8, "nw": 1, "TB": false, "nan_pos": 6, "got": 7, "x_got": -3.0, "true_idx": 4, "true_val": 3.0, "tl_max_val": 3.0}, {"N": 8, "nw": 1, "TB": 
+##### after_nightly_attempt compiled_gpu rc=0
+TRITON 3.6.0 interp False
+COMBINE_SRC
+@jit
+def _argmax_combine(value1, index1, value2, index2, tie_break_left):
+    if tie_break_left:
+        tie = value1 == value2 and index1 < index2
+    else:
+        tie = False
+    gt = value1 > value2 or tie
+    v_ret = core.where(gt, value1, value2)
+    i_ret = core.where(gt, index1, index2)
+    return v_ret, i_ret
+
+AGG {'ok': 2552, 'nan_idx': 48, 'wrong_finite': 88, 'total': 2688}
+  N8_nw1_TBTrue {'ok': 27, 'nan_idx': 4, 'wrong_finite': 1, 'total': 32}
+  N8_nw1_TBFalse {'ok': 25, 'nan_idx': 4, 'wrong_finite': 3, 'total': 32}
+  N8_nw4_TBTrue {'ok': 23, 'nan_idx': 4, 'wrong_finite': 5, 'total': 32}
+  N8_nw4_TBFalse {'ok': 23, 'nan_idx': 4, 'wrong_finite': 5, 'total': 32}
+  N32_nw1_TBTrue {'ok': 115, 'nan_idx': 4, 'wrong_finite': 9, 'total': 128}
+  N32_nw1_TBFalse {'ok': 116, 'nan_idx': 4, 'wrong_finite': 8, 'total': 128}
+  N32_nw4_TBTrue {'ok': 121, 'nan_idx': 4, 'wrong_finite': 3, 'total': 128}
+  N32_nw4_TBFalse {'ok': 114, 'nan_idx': 4, 'wrong_finite': 10, 'total': 128}
+  N128_nw1_TBTrue {'ok': 495, 'nan_idx': 4, 'wrong_finite': 13, 'total': 512}
+  N128_nw1_TBFalse {'ok': 500, 'nan_idx': 4, 'wrong_finite': 8, 'total': 512}
+  N128_nw4_TBTrue {'ok': 498, 'nan_idx': 4, 'wrong_finite': 10, 'total': 512}
+  N128_nw4_TBFalse {'ok': 495, 'nan_idx': 4, 'wrong_finite': 13, 'total': 512}
+EXAMPLES [{"N": 8, "nw": 1, "TB": true, "nan_pos": 6, "got": 3, "x_got": 2.0, "true_idx": 4, "true_val": 3.0, "tl_max_val": 3.0}, {"N": 8, "nw": 1, "TB": false, "nan_pos": 6, "got": 1, "x_got": 2.0, "true_idx": 4, "true_val": 3.0, "tl_max_val": 3.0}, {"N": 8, "nw": 1, "TB": false, "nan_pos": 6, "got": 1, "x_got": 1.0, "true_idx": 4, "true_val": 2.0, "tl_max_val": 2.0}, {"N": 8, "nw": 1, "TB": fals

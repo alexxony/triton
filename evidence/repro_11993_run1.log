@@ -1,0 +1,58 @@
+
+[colab] A new version of Colab CLI is available: 0.7.4 (current: 0.7.1.dev1+gddf8e3fcf)
+[colab] Run 'colab update' to update.
+[colab] To silence this check, set "enable_update_check": false in ~/.config/colab-cli/settings.json
+
+ENV rc 0 NVIDIA L4, 8.9
+triton 3.6.0 torch 2.11.0+cu128 /usr/local/lib/python3.13/dist-packages/triton/__init__.py 
+COMBINE rc 1 
+ n getfile
+    raise TypeError('module, class, method, function, traceback, frame, or '
+                    'code object was expected, got {}'.format(
+                    type(object).__name__))
+TypeError: module, class, method, function, traceback, frame, or code object was expected, got JITFunction
+=== interp_cpu triton=3.6.0
+N    nw TB    n   bad_argmax bad_argmin value_nan  examples(argmax: pos->got)
+4    1  True  4   4          4          0          [[0, 0], [1, 1], [2, 2], [3, 3]]
+4    1  False 4   2          3          0          [[2, 3], [3, 3]]
+4    4  True  4   4          4          0          [[0, 0], [1, 1], [2, 2], [3, 3]]
+4    4  False 4   3          2          0          [[1, 2], [2, 3], [3, 3]]
+8    1  True  8   8          8          0          [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]
+8    1  False 8   6          6          0          [[2, 4], [3, 4], [4, 6], [5, 6], [6, 7], [7, 7]]
+8    4  True  8   8          8          0          [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]
+8    4  False 8   3          7          0          [[5, 6], [6, 7], [7, 7]]
+32   1  True  32  32         32         0          [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]
+32   1  False 32  3          26         0          [[29, 30], [30, 31], [31, 31]]
+32   4  True  32  32         32         0          [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]
+32   4  False 32  19         4          0          [[13, 18], [14, 18], [15, 18], [16, 18], [17, 18], [18, 26]]
+128  1  True  29  29         29         0          [[0, 0], [1, 1], [2, 2], [10, 10], [11, 11], [20, 20]]
+128  1  False 31  6          27         0          [[99, 114], [116, 123], [120, 123], [122, 123], [126, 127], [127, 127]]
+128  4  True  30  30         30         0          [[0, 0], [1, 1], [2, 2], [3, 3], [9, 9], [10, 10]]
+128  4  False 29  5          26         0          [[101, 105], [114, 121], [117, 121], [126, 127], [127, 127]]
+1024 1  True  32  32         32         0          [[0, 0], [1, 1], [2, 2], [38, 38], [42, 42], [81, 81]]
+1024 1  False 32  11         24         0          [[772, 1008], [808, 1008], [897, 1008], [905, 1008], [906, 1008], [947, 1008]]
+1024 4  True  32  32         32         0          [[0, 0], [1, 1], [2, 2], [24, 24], [37, 37], [127, 127]]
+1024 4  False 32  5          17         0          [[855, 957], [967, 986], [1013, 1018], [1022, 1023], [1023, 1023]]
+=== compiled_gpu triton=3.6.0
+N    nw TB    n   bad_argmax bad_argmin value_nan  examples(argmax: pos->got)
+4    1  True  4   1          2          0          [[3, 3]]
+4    1  False 4   1          2          0          [[3, 3]]
+4    4  True  4   2          1          0          [[2, 1], [3, 3]]
+4    4  False 4   2          1          0          [[2, 3], [3, 3]]
+8    1  True  8   1          1          0          [[7, 7]]
+8    1  False 8   2          2          0          [[5, 4], [7, 7]]
+8    4  True  8   1          2          0          [[7, 7]]
+8    4  False 8   2          3          0          [[6, 1], [7, 7]]
+32   1  True  32  4          4          0          [[20, 15], [28, 15], [30, 15], [31, 31]]
+32   1  False 32  1          3          0          [[31, 31]]
+32   4  True  32  1          1          0          [[31, 31]]
+32   4  False 32  2          2          0          [[29, 0], [31, 31]]
+128  1  True  29  1          1          0          [[127, 127]]
+128  1  False 31  1          2          0          [[127, 127]]
+128  4  True  30  2          2          0          [[94, 98], [127, 127]]
+128  4  False 29  1          1          0          [[127, 127]]
+1024 1  True  32  4          1          0          [[406, 643], [535, 643], [788, 643], [1023, 1023]]
+1024 1  False 32  2          2          0          [[1022, 442], [1023, 1023]]
+1024 4  True  32  1          1          0          [[1023, 1023]]
+1024 4  False 32  1          1          0          [[1023, 1023]]
+saved /tmp/w/results.json
