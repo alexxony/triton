@@ -89,7 +89,9 @@ def classify(c, cache_dir):
     d = reach.analyze_ttgir(r["ttgir"])
     rec.update(d)
     if d["status"] == "ok":
-        bad = reach.ptx_check(d, reach.ptx_features(r["ptx"]))
+        confounded = "convert_layout" in r["ttgir"]
+        d["has_convert_layout"] = confounded
+        bad = reach.ptx_check(d, reach.ptx_features(r["ptx"]), confounded=confounded)
         if bad:
             rec.update(status="unclassified", reason="ptx_mismatch: " + "; ".join(bad), model_status="ok")
     else:
@@ -164,9 +166,19 @@ def report(rows, tbcheck):
     unc = len(rows) - len(ok)
     print("  unclassified fraction: %.3f (spec: >= 0.5 => park D1)" % (unc / max(len(rows), 1)))
 
+    bydt = defaultdict(lambda: [0, 0])
+    for r in rows:
+        bydt[r["cfg"]["dtype"]][0] += 1
+        bydt[r["cfg"]["dtype"]][1] += int(r["violating"])
+    print("\n== violating configs by dtype (ALL arg configs) ==")
+    for k in sorted(bydt):
+        print("  %-6s %4d / %4d" % (k, bydt[k][1], bydt[k][0]))
+    fl = [r for r in ok if r["cfg"]["dtype"] != "int32"]
+    print("  (tables below: float dtypes only, int32 has no NaN and never violates)")
+
     def table(title, keyf):
         g = defaultdict(lambda: [0, 0, 0])
-        for r in ok:
+        for r in fl:
             k = keyf(r["reach"])
             g[k][0] += 1
             g[k][1] += int(r["violating"])
@@ -180,7 +192,7 @@ def report(rows, tbcheck):
     table("by stage signature (R in-thread, L lane shuffle, W cross-warp)", lambda d: d["sig"])
     table("by (nbits, reg, lane, warp)", lambda d: (d["nbits"], d["reg_bits"], d["lane_bits"], d["warp_bits"]))
     table("by nbits (log2 of reduced axis)", lambda d: d["nbits"])
-    one = [r for r in ok if len(r["reach"]["sig"].replace("-", "")) == 1]
+    one = [r for r in fl if len(r["reach"]["sig"].replace("-", "")) == 1]
     print("\n== single-stage-kind configs (spec: 'shallow') ==")
     print("  cfgs %d, violating %d" % (len(one), sum(int(r["violating"]) for r in one)))
     for r in one:
@@ -206,7 +218,7 @@ def cmd_probe(a):
             k = triton_compile(fn, sig, {"N": 3, "BLOCK": 4}, 4, ASTSource, GPUTarget, triton)
             d = reach.analyze_ttgir(k.asm["ttgir"])
             feats = reach.ptx_features(k.asm["ptx"])
-            bad = reach.ptx_check(d, feats) if d["status"] == "ok" else ["(unclassified)"]
+            bad = reach.ptx_check(d, feats, confounded="convert_layout" in k.asm["ttgir"]) if d["status"] == "ok" else ["(unclassified)"]
             out.append((name, dt, d, feats, bad))
             print("PROBE %s %s: status=%s sig=%s reg/lane/warp=%s/%s/%s bcast_lane=%s bcast_warp=%s layout spt=%s tpw=%s wpc=%s ptx=%s check=%s" % (
                 name, dt, d["status"], d.get("sig"), d.get("reg_bits"), d.get("lane_bits"), d.get("warp_bits"),

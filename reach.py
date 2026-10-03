@@ -200,13 +200,22 @@ def ptx_features(ptx):
                 xwarp=("bar.sync" in ptx) or ("st.shared" in ptx) or ("ld.shared" in ptx))
 
 
-def ptx_check(d, feats):
-    """Presence-only cross-check of the model against the PTX. Returns list of disagreements."""
+def ptx_check(d, feats, confounded=False):
+    """Presence-only cross-check of the model against the PTX. Returns list of disagreements.
+
+    Model predicts a stage that the PTX lacks: always a contradiction.
+    PTX has a feature the model does not predict: a contradiction only if the kernel has no
+    ttg.convert_layout (a layout conversion can itself emit shuffles / shared-memory traffic, so with
+    one present the PTX presence does not isolate the reduction). `confounded` = TTGIR has convert_layout.
+    (Added after the first stage-0 run, where 576 2D configs were flagged only because of the store-side
+    conversion; see vault 27 §2 'result'.)
+    """
     bad = []
-    if (d["lane_bits"] > 0) != feats["shfl"]:
-        bad.append("shfl: model=%s ptx=%s" % (d["lane_bits"] > 0, feats["shfl"]))
-    if (d["warp_bits"] > 0) != feats["xwarp"]:
-        bad.append("xwarp: model=%s ptx=%s" % (d["warp_bits"] > 0, feats["xwarp"]))
+    for name, model, ptx in (("shfl", d["lane_bits"] > 0, feats["shfl"]), ("xwarp", d["warp_bits"] > 0, feats["xwarp"])):
+        if model and not ptx:
+            bad.append("%s: model=True ptx=False" % name)
+        elif ptx and not model and not confounded:
+            bad.append("%s: model=False ptx=True" % name)
     return bad
 
 
@@ -284,6 +293,10 @@ def selftest():
     assert ptx_check(ok, ptx_features("shfl.sync.bfly.b32 ...")) == []
     assert len(ptx_check(ok, ptx_features("bar.sync 0; st.shared.b32"))) == 2   # no shfl, unexpected xwarp
     assert len(ptx_check(ok, ptx_features("mov.u32 %r1, 0;"))) == 1             # missing shfl
+    # confounded by a layout conversion: unexpected PTX features are tolerated, missing predicted ones are not
+    assert ptx_check(ok, ptx_features("shfl.sync.bfly.b32; bar.sync 0; st.shared.b32"), confounded=True) == []
+    assert len(ptx_check(ok, ptx_features("shfl.sync.bfly.b32; bar.sync 0; st.shared.b32"), confounded=False)) == 1
+    assert len(ptx_check(ok, ptx_features("bar.sync 0; st.shared.b32"), confounded=True)) == 1   # shfl still missing
     print("SELFTEST OK (depth cases %d, invariant grid %d)" % (len(cases), n))
 
 
